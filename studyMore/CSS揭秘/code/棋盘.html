@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>棋盘</title>
+        <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="common.css" />
+        <style>
+           .chess{
+               width: 300px;
+               height: 200px;
+               background: #eee;
+               background-image: linear-gradient(45deg, #bbb 25%, transparent 0),
+                                 linear-gradient(45deg , transparent 75% , #bbb  0),
+                                 linear-gradient(45deg, #bbb 25%, transparent 0),
+                                 linear-gradient(45deg , transparent 75% , #bbb  0);
+               background-size: 30px 30px;
+               background-position: 0 0 ,15px 15px , 15px 15px ,30px 30px;
+           }
+           .chessTest{
+               width: 300px;
+               height: 200px;
+               background: repeating-conic-gradient(#bbb 0, #bbb 25%, #eee 0, #eee 50%);
+               background-size: 30px 30px;
+/*                background: #eee;
+               background-image: linear-gradient(45deg , #bbb 25% , transparent 0),
+                                 linear-gradient(45deg , transparent 75% , #bbb 0);
+               background-size: 30px 30px;
+               background-position: 0 0 , 15px 15px; */
+           }
+
+        </style>
+    </head>
+    <body>
+        <div class="chess">
+
+        </div>
+        <div class="chessTest">
+
+        </div>
+    </body>
+</html>
