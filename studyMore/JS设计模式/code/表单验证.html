@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>表单验证</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <form action="" method="post" id="userForm">
+            <label>请输入你的名字：<input name="userName" type="text"></label>
+            <label>请输入你的电话号码：<input name="userPone" type="text"></label>
+            <label>请输入你的密码：<input name="userPassworld" type="password"></label>
+        </form>
+    </body>
+    <script>
+        var form = document.querySelector('#userForm')
+        form.onsubmit = function(){
+            if(form.userName.value === ''){
+                alert("用户名格式不对")
+                return false
+            }
+            if(form.userPassworld.value.length < 6){
+                alert('你的电话号码格式不对')
+                return false
+            }
+            if(!(/(^1[3|5|8][0-9]{9}$)/.test(form.userPone.value))){
+                alert('你的电话号码格式不对')
+            }
+        }
+
+        var register = {
+            //检查不为空系列
+            isMull(value , errorMsg){
+                if(value === ''){
+                    return errorMsg
+                }
+            },
+            //检查长度匹配系列
+            isLength( value , length , errorMsg){
+                if(value.length < length){
+                    return errorMsg
+                }
+            },
+            //手机号码格式
+            isPone(value , reg ,errorMsg){
+                if(!(reg.test(value))){
+                    return errorMsg
+                }
+            }
+        }
+
+        //实现一个类实现Context的作用
+        var validator = function(){
+            this.ruleSeclte = []
+        }
+        validator.prototype.add = function(dom , rules , errorMsg){
+            let rulesArr = rules.split(":")
+            let rulesGet = rules.shift()
+            this.rulesArr.unshift(dom.value).push(errorMsg)
+            this.ruleSeclte.push(
+                register[rulesGet].apply(dom , rulesArr)
+            )
+            
+        }
+
+        validator.prototype.start = function(){
+            for(var i in this.ruleSeclte){
+                alert(this.ruleSeclte[i])
+            }
+        }
+
+        var myPone = register.isPone('1234567', /(^1[3|5|8][0-9]{9}$)/  , "你的手机号码格式不对")
+        console.log(myPone)
+    </script>
+</html>

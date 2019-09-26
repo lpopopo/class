@@ -8,6 +8,7 @@
                 width: 40px;
                 height: 40px;
                 border-radius: 50%;
+                position: absolute;
                 background: red;
             }
         </style>
@@ -48,7 +49,7 @@
             this.duration = 0    //定义动画持续时间
         }
         //动画开始函数， 初始化数据
-        animation.prototype.start = function(cssName, duration , easing , endPos){
+        animation.prototype.start = function(cssName, duration  , endPos , easing){
             this.startTime = +new Date
             this.cssName = cssName 
             this.duration = duration 
@@ -57,17 +58,17 @@
 
             var self = this
             var timer = setInterval(function(){
-                if(animation.step() == false){
+                if(self.step() == false){
                     clearInterval(timer)
                 }
-            } , 19)
+            } , 17) //以17ms刷新一次的速度进行动画播放
         }
 
         //step函数，代表每一帧所做的事情
         animation.prototype.step = function(){
             var costTime = +new Date
             if(costTime >= this.startTime + this.duration){
-                thi.update(this.endPos)
+                this.update(this.endPos)
                 return false
             }
             var pos = this.easing(costTime - this.startTime , this.startPos , this.endPos-this.startPos , this.duration)
@@ -77,5 +78,11 @@
         animation.prototype.update = function(pos){
             this.dom.style[this.cssName] = pos + 'px'
         }
+
+
+        var div = document.querySelector('.cricle')
+        var divAnimation = new animation(div)
+
+        divAnimation.start('left' , 1000 , 1000 , 'easeIn')
     </script>
 </html>

@@ -133,5 +133,180 @@ function loop(elemnt , data){
 }
 ```
 
+### 单例模式
+
+**定义:**  保证一个类仅有一个实例 ，并提供一个访问它的全局访问点
+
+JavaScript是一门无类的语言，生搬单例模式的概念并无意义。在JavaScript中创建对象的方法非常的简单。我们只需要一个"唯一"的对象，而没有必要向传统面向对象语言首先为它创建一个"类"
+
+```javascript
+var createDiv = (function(element){
+    var div 
+    return function(){
+        if(!div){
+            div = document.createElement(element)
+        }
+        return div
+    }
+})()
+```
+
+### 策略模式
+
+**定义:** 定义一系列的算法，把它们的一个一个封装起来，并且使他们可以互相替换。
+
+策略模式的目的就是将算法的使用与算法的实现分开。
+
+一个基于策略方式的程序至少由两个部分组成。第一个部分的是一组策略类，策略类封装了具体的算法，并负责具体的计算过程。第二部分就是环境类Context,Context接受客户的请求，随后把请求委托给某一个策略类。
+
+**使用策略模式实现缓慢动画**
+
+```javascript
+        //这些算法都接受4个参数，分别为动画已消耗的时间，小球的位置，小球的目标位置，动画的持续时间，返回值为动画应当处在的位置。
+        var tween = {
+            linear(runTime , pos , desPos , costTime){
+                return desPos*runTime / costTime + pos
+            },
+            easeIn(runTime , pos , desPos , costTime){
+                return desPos*(runTime /= costTime) + pos
+            },
+            strongEaseIn(runTime , pos , desPos , costTime){
+                return desPos * (runTime /= costTime)*Math.pow(runTime , 4) + pos
+            },
+            strongEaseout(runTime , pos , desPos , costTime){
+                return desPos*((runTime = runTime / costTime - 1)*Math.pow(runTime , 4) - 1)+pos
+            },
+            sineaseIn(runTime , pos , desPos , costTime){
+                return desPos * (runTime /= costTime)*Math.pow(runTime , 2) + b   
+            },
+            sineaseOut(runTime , pos , desPos , costTime){
+                return desPos*( (runTime = runTime / costTime - 1)*Math.pow(runTime , 2) + 1)+pos
+            }
+        }
+        //创建一个动画的类
+        var animation = function(dom){
+            this.dom = dom       //定义操作的DOM元素
+            this.startTime = 0   //定义动画开始的时间
+            this.startPos = 0    //定义元素的其实位置
+            this.endPos = 0      //定义元素的停止位置
+            this.cssName = null  //定义元素需要改变的css属性名
+            this.easing = null   //元素动画需要的缓动算法
+            this.duration = 0    //定义动画持续时间
+        }
+        //动画开始函数， 初始化数据
+        animation.prototype.start = function(cssName, duration  , endPos , easing){
+            this.startTime = +new Date
+            this.cssName = cssName 
+            this.duration = duration 
+            this.endPos = endPos
+            this.easing = tween[easing]
+
+            var self = this
+            var timer = setInterval(function(){
+                if(self.step() == false){
+                    clearInterval(timer)
+                }
+            } , 17) //以17ms刷新一次的速度进行动画播放
+        }
+
+        //step函数，代表每一帧所做的事情
+        animation.prototype.step = function(){
+            var costTime = +new Date
+            if(costTime >= this.startTime + this.duration){
+                this.update(this.endPos)
+                return false
+            }
+            var pos = this.easing(costTime - this.startTime , this.startPos , this.endPos-this.startPos , this.duration)
+            this.update(pos)
+        }
+        //每一帧的更新函数
+        animation.prototype.update = function(pos){
+            this.dom.style[this.cssName] = pos + 'px'
+        }
+```
+
+**策略模式重构表单验证**
+
+先看一段代码
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>表单验证</title>
+        <meta charset="utf-8">
+    </head>
+    <body>
+        <form action="" method="post" id="userForm">
+            <label>请输入你的名字：<input name="userName" type="text"></label>
+            <label>请输入你的电话号码：<input name="userPone" type="text"></label>
+            <label>请输入你的密码：<input name="userPassworld" type="password"></label>
+        </form>
+    </body>
+    <script>
+        var form = document.querySelector('#userForm')
+        form.onsubmit = function(){
+            if(form.userName.value === ''){
+                alert("用户名格式不对")
+                return false
+            }
+            if(form.userPassworld.value.length < 6){
+                alert('你的电话号码格式不对')
+                return false
+            }
+            if(!(/(^1[3|5|8][0-9]{9}$)/.test(form.userPone.value))){
+                alert('你的电话号码格式不对')
+            }
+        }
+    </script>
+</html>
+```
+
+一般情况下我们就是使用这样的方法进行相应的表单验证，但是这样的写法在你进行相应的规则修改的时候，显得有些麻烦，而且代码的复用性也是十分的差
+
+所以下面使用策略模式进行表单的重构：
+
+```javascript
+        var register = {
+            //检查不为空系列
+            isMull(value , errorMsg){
+                if(value === ''){
+                    return errorMsg
+                }
+            },
+            //检查长度匹配系列
+            isLength( value , length , errorMsg){
+                if(value.length < length){
+                    return errorMsg
+                }
+            },
+            //手机号码格式
+            isPone(value , reg ,errorMsg){
+                if(!(reg.test(value))){
+                    return errorMsg
+                }
+            }
+        }        
+        //实现一个类实现Context的作用
+        var validator = function(){
+            this.ruleSeclte = []    //存储表单验证的结果返回值
+        }
+        validator.prototype.add = function(dom , rules , errorMsg){
+            let rulesArr = rules.split(":")
+            let rulesGet = rules.shift()
+            this.rulesArr.unshift(dom.value).push(errorMsg)
+            this.ruleSeclte.push(
+                register[rulesGet].apply(dom , rulesArr)
+            )
+            
+        }
+
+        validator.prototype.start = function(){
+            for(var i in this.ruleSeclte){
+                alert(this.ruleSeclte[i])
+            }
+        }
+```
+
 
 
