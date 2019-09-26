@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="utf-8">
+        <style>
+            .cricle{
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: red;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="cricle"></div>
+    </body>
+    <script>
+        //这些算法都接受4个参数，分别为动画已消耗的时间，小球的位置，小球的目标位置，动画的持续时间，返回值为动画应当处在的位置。
+        var tween = {
+            linear(runTime , pos , desPos , costTime){
+                return desPos*runTime / costTime + pos
+            },
+            easeIn(runTime , pos , desPos , costTime){
+                return desPos*(runTime /= costTime) + pos
+            },
+            strongEaseIn(runTime , pos , desPos , costTime){
+                return desPos * (runTime /= costTime)*Math.pow(runTime , 4) + pos
+            },
+            strongEaseout(runTime , pos , desPos , costTime){
+                return desPos*((runTime = runTime / costTime - 1)*Math.pow(runTime , 4) - 1)+pos
+            },
+            sineaseIn(runTime , pos , desPos , costTime){
+                return desPos * (runTime /= costTime)*Math.pow(runTime , 2) + b   
+            },
+            sineaseOut(runTime , pos , desPos , costTime){
+                return desPos*( (runTime = runTime / costTime - 1)*Math.pow(runTime , 2) + 1)+pos
+            }
+        }
+        //创建一个动画的类
+        var animation = function(dom){
+            this.dom = dom       //定义操作的DOM元素
+            this.startTime = 0   //定义动画开始的时间
+            this.startPos = 0    //定义元素的其实位置
+            this.endPos = 0      //定义元素的停止位置
+            this.cssName = null  //定义元素需要改变的css属性名
+            this.easing = null   //元素动画需要的缓动算法
+            this.duration = 0    //定义动画持续时间
+        }
+        //动画开始函数， 初始化数据
+        animation.prototype.start = function(cssName, duration , easing , endPos){
+            this.startTime = +new Date
+            this.cssName = cssName 
+            this.duration = duration 
+            this.endPos = endPos
+            this.easing = tween[easing]
+
+            var self = this
+            var timer = setInterval(function(){
+                if(animation.step() == false){
+                    clearInterval(timer)
+                }
+            } , 19)
+        }
+
+        //step函数，代表每一帧所做的事情
+        animation.prototype.step = function(){
+            var costTime = +new Date
+            if(costTime >= this.startTime + this.duration){
+                thi.update(this.endPos)
+                return false
+            }
+            var pos = this.easing(costTime - this.startTime , this.startPos , this.endPos-this.startPos , this.duration)
+            this.update(pos)
+        }
+        //每一帧的更新函数
+        animation.prototype.update = function(pos){
+            this.dom.style[this.cssName] = pos + 'px'
+        }
+    </script>
+</html>

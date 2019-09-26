@@ -143,7 +143,48 @@ border-radius还可以对四个角中的每一个进行相应的设置。可以�
 
 方法二：
 
-可以使用
+可以使用clip-path属性
+
+```css
+img {
+ clip-path: polygon(50% 0, 100% 50%,
+ 50% 100%, 0 50%);
+ transition: 1s clip-path;
+}
+img:hover {
+ clip-path: polygon(0 0, 100% 0,
+ 100% 100%, 0 100%);
+}
+```
+
+他可以进行HTML元素的剪裁，甚至还可以用在动画上。
+
+#### 切角效果
+
+解决方法一：
+
+依旧可以利用渐变色设计出一个三角形，对元素进行掩盖。
+
+**弧形切角**
+
+与切角不同的是，弧形切角的实现的方式就是将渐变用径向渐变实现
+
+```css
+background: #58a;
+background:
+ radial-gradient(circle at top left,
+ transparent 15px, #58a 0) top left,
+ radial-gradient(circle at top right,
+ transparent 15px, #58a 0) top right,
+ radial-gradient(circle at bottom right,
+ transparent 15px, #58a 0) bottom right,
+ radial-gradient(circle at bottom left,
+ transparent 15px, #58a 0) bottom left;
+background-size: 50% 50%;
+background-repeat: no-repeat;
+```
+
+
 
 
 
