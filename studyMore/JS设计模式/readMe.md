@@ -308,5 +308,3 @@ var createDiv = (function(element){
         }
 ```
 
-
-

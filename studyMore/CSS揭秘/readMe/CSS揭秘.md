@@ -181,10 +181,8 @@ background:
  radial-gradient(circle at bottom left,
  transparent 15px, #58a 0) bottom left;
 background-size: 50% 50%;
-background-repeat: no-repeat;
+background-repeat: no-repeat
 ```
-
-
 
 
 
