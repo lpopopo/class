@@ -6,9 +6,9 @@
 */
 
 
-var childProcess = require('child_process')
+const childProcess = require('child_process')
 
-/* var option = {
+/* const option = {
     maxBuffer:100*1024,
     encoding: 'utf8',
     timeout:5000
@@ -99,10 +99,10 @@ if(cluster.isMaster){
 } */
 
 
-var cluster = require('cluster')
-var http = require('http')
-var cups = require('os').cpus()
-var Muncpus = cups.length
+const cluster = require('cluster')
+const http = require('http')
+const cups = require('os').cpus()
+const Muncpus = cups.length
 
 if(cluster.isMaster){
     cups.forEach(() => {

@@ -13,12 +13,16 @@ getElement.prototype.map = function(node){
 }
 
 let  lessPath = function(){
+    this.relstart =null
     this.path = []    //用于存储最短路径的数组
     this.node = null   //用于存储邻接链表
     this.pool = {}    //用于存储所访问过的节点,Dijkstra算法中的初始数组
     this.nodeCount = 0 //用于存储图中元素个数
     this.start = null  //用于记录起始点
     this.end = null    //用于记录终点
+    this.send = []       //用来存储转发的端口
+    this.newStart = null
+    this.map = []       //用来存储最后的路由转发表
 }
 
 //同步读取文件
@@ -68,20 +72,45 @@ lessPath.prototype.Dijkstra =  function(){
         this.upDate()
         this.min()
     }
+    this.mapCreate()
+    console.log(this.map)
     console.log(this.path)
+}
+
+lessPath.prototype.dui = function(){
+    for(let item in this.path){
+        if(this.path[item].name == this.map[0].from){
+            this.map.unshift(
+                {'from' : this.path[item].head , 'to':this.path[item].name}
+            )
+        }
+    }  
+}
+
+lessPath.prototype.mapCreate = function(){
+    for(let item in this.path){
+        if(this.path[item].name == this.end){
+            this.map.unshift(
+                { 'from' : this.path[item].head , 'to ' :this.path[item].name}
+            )
+        }
+    }
+    while(this.map[0].from != this.relstart){
+        this.dui()
+    }
 }
 
 lessPath.prototype.upDate = function(){
     let pathWeigth = this.path[this.path.length-1].weight
     let nodeNext = this.node[this.start]
     while(nodeNext.next){
-        if(this.pool[nodeNext.name] != undefined && ((pathWeigth+nodeNext.weight) < this.pool[nodeNext.name])){
-            this.pool[nodeNext.name]  =  pathWeigth+nodeNext.weight
+        if(this.pool[nodeNext.name] != undefined && ((pathWeigth+nodeNext.weight) < this.pool[nodeNext.name].weight)){
+            this.pool[nodeNext.name]  = { 'weight' : pathWeigth+nodeNext.weight ,   'head' : this.start} 
         }
         nodeNext = nodeNext.next
     }
-    if(this.pool[nodeNext.name] != undefined && ((pathWeigth+nodeNext.weight) < this.pool[nodeNext.name])){
-        this.pool[nodeNext.name]  =  pathWeigth+nodeNext.weight
+    if(this.pool[nodeNext.name] != undefined && ((pathWeigth+nodeNext.weight) < this.pool[nodeNext.name].weight)){
+        this.pool[nodeNext.name]  =   { 'weight' : pathWeigth+nodeNext.weight ,   'head' : this.start} 
     }
 }
 
@@ -90,11 +119,12 @@ lessPath.prototype.min = function(){
     let min = Infinity
     let minNode = {}
     for(var item in this.pool){
-        if(this.pool[item] < min){
-            min = this.pool[item]
+        if(this.pool[item].weight < min){
+            min = this.pool[item].weight
             minNode.name = item
             this.start = item
-            minNode.weight = this.pool[item]
+            minNode.weight = this.pool[item].weight
+            minNode.head     = this.pool[item].head
         }
     }
     delete this.pool[minNode.name] 
@@ -107,9 +137,10 @@ lessPath.prototype.initPool = function(start , end){
     for(var item in this.node){
         if(item == start){
             this.start = start
+            this.relstart = start
             continue
         }else{
-            this.pool[item] = Infinity 
+            this.pool[item] = { 'weight' : Infinity }
         }
     }
     this.end = end
@@ -123,7 +154,24 @@ lessPath.prototype.objMap = function(node){
     return node
 }
 
+// lessPath.prototype.sendStart = function(){
+
+// }
+
+//用于生成相应路由转发表
+lessPath.prototype.sendList  = function(){
+   for(let i = this.start  ;  i != this.end ;  i  = this.newStart){
+        let end = this.end
+        this.Dijkstra()
+        this.send.push({'start' : this.path[0].name , 'end' : this.path[1].name}  )
+       this.newStart = this.path[1].name
+        this.path = []
+        this.initPool(this.newStart  , end)
+    }
+}
+
+
 let test =  new lessPath()
 test.mapList('../data.txt')
-test.initPool('3' , '5')
+test.initPool('1' , '6')
 test.Dijkstra()

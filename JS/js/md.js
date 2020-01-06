@@ -1,28 +1,14 @@
-/* 
-*思路整理
-*首先上传的时候应该除了上传.md文件之外，还应该将自己的title上传，
-*上传之后的后台将.md文件转化为html文件存储在服务器上
-*请求时将html中的文件内容作为模板发送渲染给前端
-*/
+// let test = new Buffer([1,2,3,4,5,6,7,8,9,10])
 
+// let c = new Buffer([0,3,3])
 
-// const fs = require('fs')
-// const mark = require('marked')
-// const express = require('express')
+// let  a = test.slice(0,1) 
+// let  b = test.slice(4,5)
 
-// let app = express()
-// app.get('/md' , function(req , res){
-//     let file = fs.readFile('../js.md' , function(err , data){
-//         if(err){
-//             res.send('file is not find')
-//         }else{
-//             let html = mark(data.toString())
-//             res.send(html)
-//         }
-//     })
-// })
+// let size = test.length+c.length
+// let arr  = []
+// arr.push(test)
+// arr.push(c)
 
-// app.listen(3000)
-
-
-
+// let u = Buffer.concat(arr , size )
+// console.log(u)
